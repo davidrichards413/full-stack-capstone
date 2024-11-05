@@ -49,10 +49,10 @@ newsRouter.get("/", async (req, res) => {
 
 newsRouter.post("/", async (req, res) => {
   const query = req.body;
-  console.log(query);
+//   console.log(query);
   let queryObject = addApiKey(query);
   let url = createUrlFromQueryObject(queryObject);
-  console.log(url);
+//   console.log(url);
   let newsArticles = await fetchData(url);
   res.send(newsArticles);
 });

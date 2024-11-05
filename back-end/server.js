@@ -5,6 +5,7 @@ import queriesRouter from "./routes/queries/queries.js";
 import usersRouter from "./routes/users/users.js";
 
 const app = express();
+app.use(express.json());
 const port = process.env.PORT || 4000;
 
 app.use("/news", newsRouter);
