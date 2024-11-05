@@ -89,7 +89,28 @@ export function NewsReader() {
     }
   }
 
+  function currentUserMatches(user) {
+    if (currentUser) {
+      if (currentUser.user) {
+        if (currentUser.user === user) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   function onFormSubmit(queryObject) {
+    if (currentUser === null) {
+      alert("Log in if you want to create new queries!");
+      return;
+    }
+    if (savedQueries.length >= 3 && currentUserMatches("guest")) {
+      alert(
+        "guest users cannot submit new queries once saved query count is 3 or greater!"
+      );
+      return;
+    }
     let newSavedQueries = [];
     newSavedQueries.push(queryObject);
     for (let query of savedQueries) {
@@ -138,6 +159,7 @@ export function NewsReader() {
           <div className="box">
             <span className="title">Query Form</span>
             <QueryForm
+              currentUser={currentUser}
               setFormObject={setQueryFormObject}
               formObject={queryFormObject}
               submitToParent={onFormSubmit}
