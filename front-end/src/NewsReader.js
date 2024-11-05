@@ -3,15 +3,19 @@ import { Articles } from "./Articles";
 import { useState, useEffect } from "react";
 import { exampleQuery, exampleData } from "./data";
 import { SavedQueries } from "./SavedQueries";
+import { LoginForm } from "./LoginForm";
 
 export function NewsReader() {
   const [query, setQuery] = useState(exampleQuery); // latest query send to newsapi
   const [data, setData] = useState(exampleData); // current data returned from newsapi
   const [queryFormObject, setQueryFormObject] = useState({ ...exampleQuery });
+  const [savedQueries, setSavedQueries] = useState([{ ...exampleQuery }]);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [credentials, setCredentials] = useState({ user: "", password: "" });
 
   const urlNews = "/news";
   const urlQueries = "/queries";
-  const [savedQueries, setSavedQueries] = useState([{ ...exampleQuery }]);
+  const urlUsersAuth = "/users/authenticate";
 
   useEffect(() => {
     getNews(query);
@@ -20,6 +24,37 @@ export function NewsReader() {
   useEffect(() => {
     getQueryList();
   }, []);
+
+  async function login() {
+    if (currentUser !== null) {
+      // logout
+      setCurrentUser(null);
+    } else {
+      // login
+      try {
+        const response = await fetch(urlUsersAuth, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(credentials),
+        });
+        if (response.status === 200) {
+          setCurrentUser({ ...credentials });
+          setCredentials({ user: "", password: "" });
+        } else {
+          alert(
+            "Error during authentication! " +
+              credentials.user +
+              "/" +
+              credentials.password
+          );
+          setCurrentUser(null);
+        }
+      } catch (error) {
+        console.error("Error authenticating user:", error);
+        setCurrentUser(null);
+      }
+    }
+  }
 
   function onSavedQuerySelect(selectedQuery) {
     setQueryFormObject(selectedQuery);
@@ -92,6 +127,12 @@ export function NewsReader() {
 
   return (
     <div>
+      <LoginForm
+        login={login}
+        credentials={credentials}
+        currentUser={currentUser}
+        setCredentials={setCredentials}
+      />
       <div>
         <section className="parent">
           <div className="box">
