@@ -40,6 +40,7 @@ code {
   padding: 5px;
   max-width: 300px;
   font-size: small;
+  background-color: #e4f550;
 }
 
 .box span{
@@ -50,8 +51,8 @@ code {
 .title{
   font-weight: bold;
   display: block;
-  background-color: #888;
-  color: white;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
 }
 
 .selected{
