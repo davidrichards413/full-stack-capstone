@@ -45,6 +45,8 @@ export function NewsReader() {
   async function login() {
     if (currentUser !== null) {
       setCurrentUser(null);
+      setSavedQueries([]);
+      setData([]);
     } else {
       try {
         const response = await fetch(urlUsersAuth, {
@@ -78,10 +80,12 @@ export function NewsReader() {
 
   async function saveQueryList(savedQueries) {
     try {
-      const response = await fetch(`${urlQueries}/user/${currentUser.user}`, {
+      console.log(`in savedQueryList ${JSON.stringify(savedQueries)}`);
+      const response = await fetch(`${urlQueries}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(savedQueries),
+        // body: savedQueries,
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -121,8 +125,8 @@ export function NewsReader() {
         newSavedQueries.push(query);
       }
     }
-    console.log(JSON.stringify(newSavedQueries));
-    saveQueryList(newSavedQueries);
+    queryObject.user = currentUser.user;
+    saveQueryList(queryObject);
     setSavedQueries(newSavedQueries);
     setQuery(queryObject);
   }
