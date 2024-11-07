@@ -1,34 +1,63 @@
-export function SavedQueries(params) {
+export function SavedQueries({
+  savedQueries,
+  selectedQueryName,
+  onQuerySelect,
+  onResetQueries,
+  currentUser,
+}) {
   function onSavedQueryClick(savedQuery) {
-    params.onQuerySelect(savedQuery);
+    onQuerySelect(savedQuery);
   }
 
   function getQueries() {
-    return params.savedQueries.map((item, idx) => {
+    return savedQueries.map((item, idx) => {
       let trimTitle = item.queryName.substring(0, 30);
       return (
         <li
           key={idx}
           onClick={() => onSavedQueryClick(item)}
-          className={
-            item.queryName === params.selectedQueryName ? "selected" : ""
-          }
+          className={item.queryName === selectedQueryName ? "selected" : ""}
         >
-          {trimTitle + ': "' + item.q + '"'}{" "}
+          {trimTitle + ': "' + item.q + '"'}
         </li>
       );
     });
   }
 
+  function resetQueries() {
+    if (!currentUser) {
+      console.error("No user is logged in.");
+      return;
+    }
+    const userUrl = `/queries/user/${currentUser.user}`;
+    fetch(userUrl, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((text) => {
+        console.log(text);
+
+        if (onResetQueries) {
+          onResetQueries([]);
+        }
+      })
+      .catch((error) => {
+        console.error("Error resetting queries:", error);
+      });
+  }
+
   return (
     <div>
       <ul>
-        {params.savedQueries && params.savedQueries.length > 0 ? (
+        {savedQueries && savedQueries.length > 0 ? (
           getQueries()
         ) : (
           <li>No Saved Queries, Yet!</li>
         )}
       </ul>
+      <button onClick={resetQueries}>Reset Queries</button>
     </div>
   );
 }
