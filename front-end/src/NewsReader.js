@@ -6,8 +6,8 @@ import { SavedQueries } from "./SavedQueries";
 import { LoginForm } from "./LoginForm";
 
 export function NewsReader() {
-  const [query, setQuery] = useState(exampleQuery); // latest query send to newsapi
-  const [data, setData] = useState(exampleData); // current data returned from newsapi
+  const [query, setQuery] = useState(exampleQuery);
+  const [data, setData] = useState(exampleData);
   const [queryFormObject, setQueryFormObject] = useState({ ...exampleQuery });
   const [savedQueries, setSavedQueries] = useState([{ ...exampleQuery }]);
   const [currentUser, setCurrentUser] = useState(null);
@@ -17,20 +17,35 @@ export function NewsReader() {
   const urlQueries = "/queries";
   const urlUsersAuth = "/users/authenticate";
 
+  const resetQueries = (updatedQueries = []) => {
+    console.log("Updating savedQueries state to:", updatedQueries);
+    setSavedQueries(updatedQueries);
+  };
+
+  const fetchQueries = () => {
+    if (!currentUser) return;
+    let fetchUrl = urlQueries;
+    if (currentUser) {
+      fetchUrl = `${urlQueries}/user/${currentUser.user}`;
+    }
+    fetch(fetchUrl)
+      .then((response) => response.json())
+      .then((data) => setSavedQueries(data))
+      .catch((error) => console.error("Error fetching queries:", error));
+  };
+
+  useEffect(() => {
+    fetchQueries();
+  }, [currentUser]);
+
   useEffect(() => {
     getNews(query);
   }, [query]);
 
-  useEffect(() => {
-    getQueryList();
-  }, []);
-
   async function login() {
     if (currentUser !== null) {
-      // logout
       setCurrentUser(null);
     } else {
-      // login
       try {
         const response = await fetch(urlUsersAuth, {
           method: "POST",
@@ -61,21 +76,9 @@ export function NewsReader() {
     setQuery(selectedQuery);
   }
 
-  async function getQueryList() {
-    try {
-      const response = await fetch(urlQueries);
-      if (response.ok) {
-        const data = await response.json();
-        console.log("savedQueries has been retrieved: ");
-        setSavedQueries(data);
-      }
-    } catch (error) {
-      console.error("Error fetching news:", error);
-    }
-  }
   async function saveQueryList(savedQueries) {
     try {
-      const response = await fetch(urlQueries, {
+      const response = await fetch(`${urlQueries}/user/${currentUser.user}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(savedQueries),
@@ -85,7 +88,7 @@ export function NewsReader() {
       }
       console.log("savedQueries array has been persisted:");
     } catch (error) {
-      console.error("Error fetching news:", error);
+      console.error("Error saving query:", error);
     }
   }
 
@@ -158,12 +161,16 @@ export function NewsReader() {
         <section className="parent">
           <div className="box">
             <span className="title">Query Form</span>
-            <QueryForm
-              currentUser={currentUser}
-              setFormObject={setQueryFormObject}
-              formObject={queryFormObject}
-              submitToParent={onFormSubmit}
-            />
+            {currentUser ? (
+              <QueryForm
+                currentUser={currentUser}
+                setFormObject={setQueryFormObject}
+                formObject={queryFormObject}
+                submitToParent={onFormSubmit}
+              />
+            ) : (
+              <p>Please log in to submit queries.</p>
+            )}
           </div>
           <div className="box">
             <span className="title">Saved Queries</span>
@@ -171,6 +178,8 @@ export function NewsReader() {
               savedQueries={savedQueries}
               selectedQueryName={query.queryName}
               onQuerySelect={onSavedQuerySelect}
+              onResetQueries={resetQueries}
+              currentUser={currentUser}
             />
           </div>
           <div className="box">

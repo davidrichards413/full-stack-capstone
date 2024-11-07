@@ -49,7 +49,6 @@ export function Articles(params) {
                     target="_blank"
                     rel="noreferrer"
                     style={{
-                      textDecoration: "none", // Remove underline
                       fontSize: "16px",
                       color: "#333",
                       fontFamily: "Arial, sans-serif",
