@@ -85,7 +85,7 @@ export function QueryForm(params) {
             />
           </div>
         </div>
-        <span style={{ display: "block", backgroundColor: "#eee" }}>
+        <span style={{ display: "block", backgroundColor: "#e4f550" }}>
           <input type="button" value="Submit" onClick={onSubmitClick} />
         </span>
       </form>
