@@ -56,7 +56,6 @@ export function QueryForm(params) {
           className={currentUserIsAdmin() ? "visible" : "hidden"}
           style={{ border: "solid black 1px" }}
         >
-          {/* Extra fields */}
           <div>
             <label htmlFor="language">Language: </label>
             <select
@@ -70,7 +69,6 @@ export function QueryForm(params) {
               <option value="es">Spanish</option>
               <option value="fr">French</option>
               <option value="de">German</option>
-              {/* Add options for specific languages (e.g., en, es, fr) */}
             </select>
           </div>
 

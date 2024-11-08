@@ -1,12 +1,11 @@
-import { NewsReader } from './NewsReader';
-import './App.css';
+import { NewsReader } from "./NewsReader";
+import "./App.css";
 
 function App() {
-
   return (
     <div>
       <header>
-        <p>News Reader App</p>
+        <p style={{ textAlign: "center" }}>News Reader App</p>
       </header>
       <NewsReader />
     </div>
